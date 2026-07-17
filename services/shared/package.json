@@ -1,0 +1,15 @@
+{
+  "name": "@boblog/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-redis": "^8.0.0",
+    "express-session": "^1.18.0",
+    "otplib": "^12.0.1",
+    "pg": "^8.13.0",
+    "redis": "^4.7.0"
+  }
+}

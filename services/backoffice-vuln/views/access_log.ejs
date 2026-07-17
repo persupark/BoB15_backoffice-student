@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head><title>접속기록 · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <h1>📋 접속기록</h1>
+  <table>
+    <tr><th>시각</th><th>계정</th><th>수행업무</th><th>접속 IP</th></tr>
+    <% logs.forEach(function (l) { %>
+    <tr>
+      <td class="muted"><%= l.occurred_at.toISOString().replace('T',' ').slice(0,19) %></td>
+      <td><%= l.actor %></td>
+      <td><%= l.action %></td>
+      <td><%= l.ip ?? '-' %></td>
+    </tr>
+    <% }); %>
+  </table>
+    </main>
+  </div>
+</div>
+</body>
+</html>

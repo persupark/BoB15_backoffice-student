@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+<head><title>로그인 · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <div class="auth-card">
+    <h1>로그인</h1>
+    <p class="muted">boblog 운영 백오피스</p>
+    <% if (error) { %><div class="err"><%= error %></div><% } %>
+    <form method="post" action="/login">
+      <label>아이디</label><input name="login_id" required autofocus>
+      <label>비밀번호</label><input name="password" type="password" required>
+      <p><button class="primary" style="width:100%">로그인</button></p>
+    </form>
+  </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head><title>파기 · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <h1>🗑️ 보유기간 경과 회원 (<%= candidates.length %>건)</h1>
+  <% if (!candidates.length) { %>
+    <p class="muted">대상이 없습니다.</p>
+  <% } else { %>
+  <table>
+    <tr><th>ID</th><th>이메일</th><th>이름</th><th>보유기한</th><th></th></tr>
+    <% candidates.forEach(function (c) { %>
+    <tr>
+      <td><%= c.id %></td>
+      <td><%= c.email %></td>
+      <td><%= c.name %></td>
+      <td><%= c.retention_until.toISOString().slice(0,10) %></td>
+      <td>
+        <form method="post" action="/destruction/<%= c.id %>" onsubmit="return confirm('삭제하시겠습니까?')">
+          <button>파기</button>
+        </form>
+      </td>
+    </tr>
+    <% }); %>
+  </table>
+  <% } %>
+    </main>
+  </div>
+</div>
+</body>
+</html>

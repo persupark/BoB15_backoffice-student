@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="ko">
+<head><title>오류 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member: typeof member !== 'undefined' ? member : null }) %>
+<main>
+  <div class="card">
+    <h1>문제가 발생했습니다</h1>
+    <div class="err"><%= message %></div>
+    <p><a href="/">홈으로</a></p>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head><title>boblog — 매시간, 지금 이 순간</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member }) %>
+<main>
+  <div class="card">
+    <h1>📸 매시간, 지금 이 순간을 공유하세요</h1>
+    <p class="muted">boblog는 매시간 알림이 오면 그 순간의 사진을 찍어 친구와 공유하는 서비스입니다.<br>
+    ※ 본 서비스는 보안 교육용 모의(mock) 서비스이며 모든 데이터는 가명·합성 데이터입니다.</p>
+    <% if (!member) { %>
+      <p><a href="/signup"><button style="width:auto;padding:11px 24px">지금 시작하기</button></a></p>
+    <% } else { %>
+      <p><a href="/feed"><button style="width:auto;padding:11px 24px">내 피드 보기</button></a></p>
+    <% } %>
+  </div>
+</main>
+</body>
+</html>

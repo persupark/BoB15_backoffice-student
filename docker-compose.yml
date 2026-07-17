@@ -1,0 +1,56 @@
+# boblog 로컬 랩: postgres + redis + 서비스 3종
+#   docker compose up -d --build
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: boblog
+      POSTGRES_PASSWORD: boblog
+      POSTGRES_DB: boblog
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U boblog"]
+      interval: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  auth-member:
+    build: { context: ., dockerfile: services/auth-member/Dockerfile }
+    environment: &appenv
+      DATABASE_URL: postgres://boblog:boblog@postgres:5432/boblog
+      REDIS_URL: redis://redis:6379
+      MASTER_KEY_B64: ${MASTER_KEY_B64:-Ym9ibG9nLWRlbW8ta2V5IWJvYmxvZy1kZW1vLWtleSE=}
+      SERVICE_TOKEN: ${SERVICE_TOKEN:-dev-internal-service-token}
+      SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret-change-me}
+      SESSION_IDLE_MINUTES: "30"
+      PHOTO_BASE_URL: http://photo:3002
+      UPLOAD_DIR: /data/uploads
+    ports: ["3001:3001"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+
+  photo:
+    build: { context: ., dockerfile: services/photo/Dockerfile }
+    environment: *appenv
+    ports: ["3002:3002"]
+    volumes: [uploads:/data/uploads]
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  # ── 진단 실습 대상 백오피스 (데이터는 vuln 스키마의 가명·합성 데이터만 사용) ──
+  backoffice-vuln:
+    build: { context: ., dockerfile: services/backoffice-vuln/Dockerfile }
+    environment: *appenv
+    ports: ["3200:3200"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+
+volumes:
+  pgdata:
+  uploads:

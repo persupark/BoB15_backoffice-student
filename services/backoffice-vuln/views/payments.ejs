@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+<head><title>구매기록 · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <h1>💳 구매기록</h1>
+  <table>
+    <tr><th>일시</th><th>회원</th><th>상품</th><th>금액</th><th>카드번호</th></tr>
+    <% payments.forEach(function (p) { %>
+    <tr>
+      <td class="muted"><%= p.paid_at.toISOString().slice(0,10) %></td>
+      <td><%= p.email %> (<%= p.name %>)</td>
+      <td><%= p.item %></td>
+      <td><%= p.amount.toLocaleString() %>원</td>
+      <td><code><%= p.card_no %></code></td>
+    </tr>
+    <% }); %>
+  </table>
+    </main>
+  </div>
+</div>
+</body>
+</html>

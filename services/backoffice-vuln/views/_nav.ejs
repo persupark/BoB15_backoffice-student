@@ -1,0 +1,20 @@
+<div class="shell">
+  <% if (admin) { %>
+  <aside class="sidebar">
+    <div class="workspace"><span>📷</span> boblog</div>
+    <nav class="sidebar-nav">
+      <a href="/members">👤 회원조회</a>
+      <a href="/payments">💳 구매기록</a>
+      <a href="/roles">🔑 권한관리</a>
+      <a href="/destruction">🗑️ 파기</a>
+      <a href="/access-log">📋 접속기록</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="who-name"><%= admin.name %></span>
+      <form method="post" action="/logout"><button>로그아웃</button></form>
+    </div>
+  </aside>
+  <% } %>
+  <div class="content">
+    <div class="callout">💡 교육 목적으로 제작된 실습 시스템입니다. 모든 데이터는 가명·합성 데이터입니다.</div>
+    <main class="content-inner">

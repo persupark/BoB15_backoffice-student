@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head><title>피드 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member }) %>
+<main>
+  <div class="card">
+    <h1>📸 지금 이 순간</h1>
+    <% if (uploaded) { %><div class="ok">사진이 업로드되었습니다.</div><% } %>
+    <% if (error) { %><div class="err">업로드에 실패했습니다 (이미지 파일 jpg/png/webp/gif, 5MB 이하).</div><% } %>
+    <form method="post" action="/photos" enctype="multipart/form-data">
+      <label>사진</label><input type="file" name="photo" accept="image/*" required>
+      <label>한 줄 캡션</label><input name="caption" maxlength="100" placeholder="지금 뭐 해?">
+      <button>올리기</button>
+    </form>
+  </div>
+
+  <% for (const p of photos) { %>
+    <div class="photo">
+      <img src="/photos/<%= p.id %>/file" alt="" loading="lazy">
+      <div class="meta">
+        <strong><%= member.name %></strong> <%= p.caption || '' %>
+        <div class="muted">
+          <%= new Date(p.taken_at).toLocaleString('ko-KR') %>
+          <% if (p.has_location) { %> · 📍 위치 기록됨(암호화 저장)<% } %>
+        </div>
+      </div>
+    </div>
+  <% } %>
+  <% if (!photos.length) { %><p class="muted">아직 사진이 없습니다. 첫 순간을 올려보세요!</p><% } %>
+</main>
+</body>
+</html>

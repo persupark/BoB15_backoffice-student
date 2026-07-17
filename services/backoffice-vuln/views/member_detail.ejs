@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head><title><%= m.name %> · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <h1><%= m.name %> <span class="muted">#<%= m.id %></span>
+    <% if (m.overdue) { %><span class="badge overdue">보유기간 경과</span><% } %>
+  </h1>
+  <table>
+    <tr><th>이메일</th><td><%= m.email %></td></tr>
+    <tr><th>이름</th><td><%= m.name %></td></tr>
+    <tr><th>전화번호</th><td><%= m.phone %></td></tr>
+    <tr><th>본인확인값(CI)</th><td><code><%= m.ci_value %></code></td></tr>
+    <tr><th>생년월일</th><td><%= m.birth_date ? m.birth_date.toISOString().slice(0,10) : '-' %></td></tr>
+    <tr><th>보유기간 만료일</th><td><%= m.retention_until ? m.retention_until.toISOString().slice(0,10) : '-' %></td></tr>
+    <tr><th>가입일</th><td><%= m.created_at.toISOString().slice(0,10) %></td></tr>
+  </table>
+
+  <h2>결제 내역</h2>
+  <% if (!payments.length) { %>
+    <p class="muted">결제 내역이 없습니다.</p>
+  <% } else { %>
+  <table>
+    <tr><th>상품</th><th>금액</th><th>카드번호</th><th>결제일</th></tr>
+    <% payments.forEach(function (p) { %>
+    <tr>
+      <td><%= p.item %></td>
+      <td><%= p.amount.toLocaleString() %>원</td>
+      <td><code><%= p.card_no %></code></td>
+      <td><%= p.paid_at.toISOString().slice(0,10) %></td>
+    </tr>
+    <% }); %>
+  </table>
+  <% } %>
+  <p><a href="/members">← 목록</a></p>
+    </main>
+  </div>
+</div>
+</body>
+</html>

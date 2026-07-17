@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head><title>로그인 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member: null }) %>
+<main>
+  <div class="card">
+    <h1>로그인</h1>
+    <% if (joined) { %><div class="ok">가입 완료! 로그인해 주세요.</div><% } %>
+    <% if (error) { %><div class="err"><%= error %></div><% } %>
+    <form method="post" action="/login">
+      <label>이메일</label><input name="email" type="email" required>
+      <label>비밀번호</label><input name="password" type="password" required>
+      <button>로그인</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

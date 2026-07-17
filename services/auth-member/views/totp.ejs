@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ko">
+<head><title>2단계 인증 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member: null }) %>
+<main>
+  <div class="card">
+    <h1>2단계 인증 (TOTP)</h1>
+    <% if (error) { %><div class="err"><%= error %></div><% } %>
+    <form method="post" action="/login/totp">
+      <label>인증 앱의 6자리 코드</label>
+      <input name="token" inputmode="numeric" pattern="[0-9]*" maxlength="6" required autofocus>
+      <button>확인</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

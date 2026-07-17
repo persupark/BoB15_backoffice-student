@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head><title>TOTP 등록 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member }) %>
+<main>
+  <div class="card">
+    <h1>TOTP 등록</h1>
+    <% if (error) { %><div class="err"><%= error %></div><% } %>
+    <p class="muted">인증 앱(Google Authenticator 등)에 아래 시크릿을 수동 등록하거나 URI를 사용하세요.</p>
+    <p>시크릿: <code id="secret"><%= secret %></code></p>
+    <p>URI: <code><%= uri %></code></p>
+    <form method="post" action="/mfa/setup">
+      <label>앱에 표시된 6자리 코드로 확인</label>
+      <input name="token" inputmode="numeric" maxlength="6" required>
+      <button>등록 완료</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

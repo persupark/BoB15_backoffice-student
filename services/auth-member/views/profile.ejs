@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head><title>내 정보 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member }) %>
+<main>
+  <div class="card">
+    <h1>내 정보</h1>
+    <p class="muted">개인정보는 기본 마스킹되어 표시됩니다.</p>
+    <p>이름: <strong><%= name %></strong><br>
+       이메일: <code><%= email %></code><br>
+       전화번호: <code><%= phone %></code><br>
+       생년월일: <code><%= birth || '-' %></code></p>
+  </div>
+  <div class="card">
+    <h1>2단계 인증 (TOTP)</h1>
+    <% if (mfaEnrolled) { %>
+      <p class="ok">등록됨 — 로그인 시 인증 앱 코드가 요구됩니다.</p>
+    <% } else { %>
+      <p class="muted">아직 미등록입니다. 등록하면 로그인 보호가 강화됩니다.</p>
+      <a href="/mfa/setup"><button style="width:auto;padding:10px 20px">TOTP 등록하기</button></a>
+    <% } %>
+  </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<header>
+  <a class="logo" href="/">boblog</a>
+  <nav>
+    <% if (typeof member !== 'undefined' && member) { %>
+      <a href="/feed">피드</a>
+      <a href="/profile"><%= member.name %>님</a>
+      <a href="/logout">로그아웃</a>
+    <% } else { %>
+      <a href="/login">로그인</a>
+      <a href="/signup">회원가입</a>
+    <% } %>
+  </nav>
+</header>

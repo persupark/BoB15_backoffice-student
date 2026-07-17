@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head><title>권한관리 · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <h1>🔑 운영자 계정</h1>
+  <table>
+    <tr><th>아이디</th><th>이름</th><th>가입일</th><th>마지막 로그인</th></tr>
+    <% admins.forEach(function (a) { %>
+    <tr>
+      <td><%= a.login_id %></td>
+      <td><%= a.name %></td>
+      <td class="muted"><%= a.created_at.toISOString().slice(0,10) %></td>
+      <td class="muted"><%= a.last_login ? a.last_login.toISOString().slice(0,10) : '기록 없음' %></td>
+    </tr>
+    <% }); %>
+  </table>
+    </main>
+  </div>
+</div>
+</body>
+</html>

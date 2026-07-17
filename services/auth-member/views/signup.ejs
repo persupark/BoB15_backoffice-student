@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head><title>회원가입 — boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav', { member: null }) %>
+<main>
+  <div class="card">
+    <h1>회원가입</h1>
+    <% if (error) { %><div class="err"><%= error %></div><% } %>
+    <form method="post" action="/signup">
+      <label>이메일</label><input name="email" type="email" required>
+      <label>비밀번호 (8자 이상)</label><input name="password" type="password" minlength="8" required>
+      <label>이름</label><input name="name" required>
+      <label>전화번호</label>
+      <input name="phone" placeholder="010-0000-0000" required>
+      <label>생년월일 (선택)</label><input name="birth" type="date">
+      <button>가입하기</button>
+    </form>
+  </div>
+</main>
+</body>
+</html>

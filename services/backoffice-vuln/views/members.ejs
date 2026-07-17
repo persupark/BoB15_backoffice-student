@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head><title>회원조회 · boblog</title><%- include('_head') %></head>
+<body>
+<%- include('_nav') %>
+  <h1>👤 회원 개인정보</h1>
+  <form method="get" action="/members">
+    <input name="q" value="<%= q %>" placeholder="이메일 검색" style="width:280px">
+    <button>검색</button>
+  </form>
+  <p class="muted" style="margin-top:12px">전체 <%= members.length %>건 표시</p>
+  <table>
+    <tr><th>ID</th><th>이메일</th><th>이름</th><th>전화번호</th><th>생년월일</th><th>보유기간</th><th></th></tr>
+    <% members.forEach(function (m) { %>
+    <tr>
+      <td><%= m.id %></td>
+      <td><%= m.email %></td>
+      <td><%= m.name %></td>
+      <td><%= m.phone %></td>
+      <td><%= m.birth_date ? m.birth_date.toISOString().slice(0,10) : '-' %></td>
+      <td>
+        <%= m.retention_until ? m.retention_until.toISOString().slice(0,10) : '-' %>
+        <% if (m.overdue) { %><span class="badge overdue">경과</span><% } %>
+      </td>
+      <td><a href="/members/<%= m.id %>">상세</a></td>
+    </tr>
+    <% }); %>
+  </table>
+
+  <h2>전체 내려받기</h2>
+  <form method="post" action="/members/export">
+    <button>회원 전체 CSV 다운로드</button>
+  </form>
+    </main>
+  </div>
+</div>
+</body>
+</html>
