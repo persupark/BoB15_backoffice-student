@@ -104,6 +104,8 @@ npm run dev:auth & npm run dev:photo & npm run dev:vuln
 - 서비스: `demo@boblog.dev`
 - 백오피스(3200): `vadmin` `vstaff` `vpart`
 
+**공유 실습 서버로 접속하는 경우**(강사가 별도 공지한 주소): 본인 계정을 [student-accounts.csv](student-accounts.csv)에서 자기 아이디(`studentNN`)로 찾아 로그인하세요. 다른 사람 계정을 쓰면 접속기록(actor)이 섞여 실습 추적이 어려워집니다.
+
 ### 수강생 개인 계정 (1인 1계정, 선택)
 
 여러 명이 같은 인스턴스를 공유해서 쓰는 경우, 개인별 계정을 발급해 접속기록으로 구분할 수 있습니다.
