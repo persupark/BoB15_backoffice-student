@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { publishAuditEvent } from '../audit.js';
 import { md5 } from '../app.js';
 
 /**
@@ -29,8 +30,7 @@ export function createVulnAuthRouter({ pool }) {
 
       req.session.vadmin = { id: admin.id, login_id: admin.login_id, name: admin.name };
 
-      await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-        [admin.login_id, 'login.success', req.ip]);
+      await publishAuditEvent({ actor: admin.login_id, action: 'login.success', ip: req.ip });
 
       res.redirect('/');
     } catch (e) {
@@ -42,8 +42,7 @@ export function createVulnAuthRouter({ pool }) {
     const actor = req.session.vadmin?.login_id;
     if (actor) {
       try {
-        await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-          [actor, 'logout', req.ip]);
+        await publishAuditEvent({ actor, action: 'logout', ip: req.ip });
       } catch { /* 로그 기록 실패는 무시 */ }
     }
     req.session.destroy(() => res.redirect('/login'));

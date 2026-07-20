@@ -4,3 +4,4 @@ export { createSessionMiddleware, createRedisClient } from './session.js';
 export { LocalAuthProvider } from './auth-provider.js';
 export { createPool } from './db.js';
 export { isLocked, recordLoginFailure, resetLoginFailures } from './lockout.js';
+export { createKafkaClient } from './kafka.js';

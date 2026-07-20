@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { publishAuditEvent } from '../audit.js';
 
 /** 구매기록 화면. */
 export function createVulnPaymentsRouter({ pool }) {
@@ -11,8 +12,7 @@ export function createVulnPaymentsRouter({ pool }) {
            FROM vuln.payments p JOIN vuln.members m ON m.id = p.member_id
           ORDER BY p.paid_at DESC LIMIT 200`,
       );
-      await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-        [req.session.vadmin.login_id, 'payments.list', req.ip]);
+      await publishAuditEvent({ actor: req.session.vadmin.login_id, action: 'payments.list', ip: req.ip });
       res.render('payments', { payments: rows });
     } catch (e) {
       next(e);

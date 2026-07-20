@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { publishAuditEvent } from '../audit.js';
 
 /**
  * 진단 대상 백오피스 — 회원 개인정보 화면.
@@ -25,8 +26,7 @@ export function createVulnMembersRouter({ pool }) {
           ORDER BY id LIMIT 100`,
         [q],
       );
-      await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-        [req.session.vadmin.login_id, 'members.list', req.ip]);
+      await publishAuditEvent({ actor: req.session.vadmin.login_id, action: 'members.list', ip: req.ip });
       res.render('members', { q, members: rows });
     } catch (e) {
       next(e);
@@ -51,8 +51,7 @@ export function createVulnMembersRouter({ pool }) {
         'SELECT id, item, amount, card_no, paid_at FROM vuln.payments WHERE member_id = $1 ORDER BY paid_at DESC',
         [id],
       );
-      await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-        [req.session.vadmin.login_id, 'members.view', req.ip]);
+      await publishAuditEvent({ actor: req.session.vadmin.login_id, action: 'members.view', ip: req.ip });
       res.render('member_detail', { m: rows[0], payments: payments.rows });
     } catch (e) {
       next(e);
@@ -65,8 +64,7 @@ export function createVulnMembersRouter({ pool }) {
         `SELECT id, email, name, phone, ci_value, birth_date, created_at
            FROM vuln.members ORDER BY id`,
       );
-      await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-        [req.session.vadmin.login_id, 'members.export', req.ip]);
+      await publishAuditEvent({ actor: req.session.vadmin.login_id, action: 'members.export', ip: req.ip });
       const csv = [
         'id,email,name,phone,ci_value,birth_date,created_at',
         ...rows.map((m) => [

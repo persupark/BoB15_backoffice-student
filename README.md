@@ -33,6 +33,9 @@
 | auth-member | 3001 | boblog 미니 웹사이트(가입·로그인·피드·업로드 BFF) |
 | photo | 3002 | 사진 내부 API (서비스 토큰 인증, auth-member가 호출) |
 | backoffice-vuln | 3200 | 진단 실습 대상 백오피스(개인정보처리시스템) |
+| audit-consumer | (내부, 포트 없음) | backoffice-vuln의 접속기록 이벤트를 Kafka(`vuln.audit-events`)에서 구독해 DB에 적재 |
+
+> `backoffice-vuln`은 접속기록을 DB에 직접 쓰지 않고 **Kafka**에 발행만 합니다. 실제 적재는 `audit-consumer`가 담당합니다 — 로그인을 포함한 모든 접속기록 관련 동작은 **Kafka와 audit-consumer가 함께 떠 있어야** 정상 동작합니다(아래 설치 안내 참조).
 
 ## 설치 및 실행
 
@@ -56,19 +59,38 @@ npm run migrate && npm run seed && npm run seed:vuln
 - 백오피스(진단 실습 대상): http://localhost:3200
 
 > Windows PowerShell에서는 `cp` 대신 `copy .env.example .env`를 사용하세요.
+> ⚠️ **현재 `docker-compose.yml`에는 Kafka가 포함되어 있지 않습니다.** 그래서 이 방법만으로는 `backoffice-vuln`의 로그인 등 접속기록이 발생하는 동작이 되지 않습니다(아래 "왜 Kafka가 필요한가" 참조). 지금은 ① 방법 2(네이티브)에서 Kafka를 직접 설치하거나, ② 강사가 공지한 공유 실습 서버(`lab.itproof.me`)를 이용하세요.
 
 ### 방법 2 — 네이티브 실행 (Docker 없이)
 
 #### macOS
 
 ```bash
-brew install git node postgresql@16 redis
+brew install git node postgresql@16 redis openjdk
 brew services start postgresql@16 redis
 createuser -s boblog; createdb -O boblog boblog; psql -c "ALTER USER boblog PASSWORD 'boblog'"
 git clone https://github.com/persupark/BoB15_backoffice-student.git
 cd BoB15_backoffice-student
 cp .env.example .env && npm install && npm run migrate && npm run seed && npm run seed:vuln
-npm run dev:auth & npm run dev:photo & npm run dev:vuln
+```
+
+**Kafka(1회만 설정, 이후 `kafka-server-start.sh`로 재기동)** — `backoffice-vuln`의 접속기록은 Kafka를 거쳐 DB에 적재됩니다(왜 필요한지는 [아래](#왜-kafka가-필요한가) 참조):
+
+```bash
+curl -sL -o /tmp/kafka.tgz https://downloads.apache.org/kafka/4.3.1/kafka_2.13-4.3.1.tgz
+tar -xzf /tmp/kafka.tgz -C ~/ && mv ~/kafka_2.13-4.3.1 ~/kafka
+export JAVA_HOME="$(brew --prefix openjdk)/libexec/openjdk.jdk/Contents/Home"
+CLUSTER_ID=$(~/kafka/bin/kafka-storage.sh random-uuid)
+~/kafka/bin/kafka-storage.sh format -t "$CLUSTER_ID" -c ~/kafka/config/server.properties --standalone
+~/kafka/bin/kafka-server-start.sh ~/kafka/config/server.properties &
+sleep 5
+~/kafka/bin/kafka-topics.sh --create --topic vuln.audit-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
+
+이제 4개 서비스를 모두 기동합니다(순서 무관, `audit-consumer`가 없으면 접속기록이 DB에 쌓이지 않습니다):
+
+```bash
+npm run dev:auth & npm run dev:photo & npm run dev:vuln & npm run dev:audit-consumer &
 ```
 
 #### Windows
@@ -79,7 +101,7 @@ Redis는 Windows를 공식 지원하지 않으므로 **WSL2(Ubuntu)** 사용을 
 2. WSL(Ubuntu) 안에서:
 
 ```bash
-sudo apt update && sudo apt install -y git postgresql redis-server curl
+sudo apt update && sudo apt install -y git postgresql redis-server curl default-jre-headless
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt install -y nodejs
 sudo service postgresql start && sudo service redis-server start
 sudo -u postgres createuser -s boblog
@@ -88,7 +110,24 @@ sudo -u postgres psql -c "ALTER USER boblog PASSWORD 'boblog'"
 git clone https://github.com/persupark/BoB15_backoffice-student.git
 cd BoB15_backoffice-student
 cp .env.example .env && npm install && npm run migrate && npm run seed && npm run seed:vuln
-npm run dev:auth & npm run dev:photo & npm run dev:vuln
+```
+
+**Kafka(1회만 설정)** — `backoffice-vuln`의 접속기록은 Kafka를 거쳐 DB에 적재됩니다([왜 필요한지](#왜-kafka가-필요한가) 참조):
+
+```bash
+curl -sL -o /tmp/kafka.tgz https://downloads.apache.org/kafka/4.3.1/kafka_2.13-4.3.1.tgz
+tar -xzf /tmp/kafka.tgz -C ~/ && mv ~/kafka_2.13-4.3.1 ~/kafka
+CLUSTER_ID=$(~/kafka/bin/kafka-storage.sh random-uuid)
+~/kafka/bin/kafka-storage.sh format -t "$CLUSTER_ID" -c ~/kafka/config/server.properties --standalone
+~/kafka/bin/kafka-server-start.sh ~/kafka/config/server.properties &
+sleep 5
+~/kafka/bin/kafka-topics.sh --create --topic vuln.audit-events --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
+
+이제 4개 서비스를 모두 기동합니다(`audit-consumer`가 없으면 접속기록이 DB에 쌓이지 않습니다):
+
+```bash
+npm run dev:auth & npm run dev:photo & npm run dev:vuln & npm run dev:audit-consumer &
 ```
 
 3. Windows 브라우저에서 `http://localhost:3001`, `http://localhost:3200`으로 접속(WSL2는 localhost가 자동 연결됩니다).
@@ -99,6 +138,16 @@ npm run dev:auth & npm run dev:photo & npm run dev:vuln
 
 - 코드 레벨 취약점(SQL 인젝션, XSS 등)은 이번 실습 범위가 아닙니다.
 - 데이터는 전부 가명·합성 데이터입니다.
+
+### 왜 Kafka가 필요한가
+
+`backoffice-vuln`은 로그인·회원조회·구매기록·권한관리·파기 등 주요 동작이 발생할 때 접속기록(`vuln.access_log`)을 DB에 **직접 쓰지 않습니다.** 대신 Kafka 토픽 `vuln.audit-events`에 이벤트(계정·행위·IP·시각)를 발행하고, 별도 프로세스인 `audit-consumer`가 그 토픽을 구독해 실제 DB insert를 수행합니다.
+
+```
+backoffice-vuln  ──(발행)──▶  Kafka: vuln.audit-events  ──(구독)──▶  audit-consumer  ──▶  vuln.access_log
+```
+
+이 구조 자체가 진단 대상입니다 — 개인정보(계정·IP 등)가 DB에 닿기 전에 **다른 시스템(Kafka)을 거쳐 흐른다**는 사실이, 안전성 확보조치의 적용 범위(개인정보처리시스템)를 어디까지로 볼 것인가에 어떤 영향을 주는지 함께 고려하세요.
 
 시드 데모 계정(비밀번호 공통 `Passw0rd!`)
 - 서비스: `demo@boblog.dev`

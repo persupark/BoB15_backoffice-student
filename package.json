@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "boblog — 모의 SNS 서비스 + 개인정보처리시스템(백오피스) 실습 랩",
+  "description": "boblog \u2014 \ubaa8\uc758 SNS \uc11c\ube44\uc2a4 + \uac1c\uc778\uc815\ubcf4\ucc98\ub9ac\uc2dc\uc2a4\ud15c(\ubc31\uc624\ud53c\uc2a4) \uc2e4\uc2b5 \ub7a9",
   "engines": {
     "node": ">=22.9.0"
   },
@@ -18,7 +18,8 @@
     "dev:auth": "node --env-file-if-exists=.env services/auth-member/src/server.js",
     "dev:photo": "node --env-file-if-exists=.env services/photo/src/server.js",
     "dev:vuln": "node --env-file-if-exists=.env services/backoffice-vuln/src/server.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dev:audit-consumer": "node --env-file-if-exists=.env services/audit-consumer/src/server.js"
   },
   "devDependencies": {
     "supertest": "^7.0.0",

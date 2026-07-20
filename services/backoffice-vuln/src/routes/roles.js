@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { publishAuditEvent } from '../audit.js';
 
 /** 권한관리 화면. */
 export function createVulnRolesRouter({ pool }) {
@@ -12,8 +13,7 @@ export function createVulnRolesRouter({ pool }) {
                   WHERE l.actor = a.login_id AND l.action = 'login.success') AS last_login
            FROM vuln.admin_users a ORDER BY a.id`,
       );
-      await pool.query('INSERT INTO vuln.access_log (actor, action, ip) VALUES ($1, $2, $3)',
-        [req.session.vadmin.login_id, 'accounts.list', req.ip]);
+      await publishAuditEvent({ actor: req.session.vadmin.login_id, action: 'accounts.list', ip: req.ip });
       res.render('roles', { admins: rows });
     } catch (e) {
       next(e);
